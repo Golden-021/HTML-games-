@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Flappy Bird - Easy Mode with Smooth Control</title>
+  <title>Flappy Bird - Score Fix + Easy Mode</title>
   <style>
     body {
       margin: 0;
@@ -38,7 +38,141 @@
 </head>
 <body>
 
-<h1>Flappy Bird - Easy Mode 🎮</h1>
+<h1>Flappy Bird - Easy & Working Score 🐦</h1>
 <canvas id="gameCanvas" width="400" height="600"></canvas>
 <div class="buttons">
-  <button onclick="
+  <button onclick="startGame()">Start Game</button>
+  <button onclick="togglePause()">Pause/Resume</button>
+</div>
+
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  let bird, pipes, score, highScore = 0, gameRunning = false, gamePaused = false, animationId;
+  let jumpHeld = false;
+
+  function resetGame() {
+    bird = { x: 80, y: 300, width: 30, height: 30, velocity: 0, gravity: 0.3, jump: -6 };
+    pipes = [];
+    score = 0;
+    gameRunning = true;
+    gamePaused = false;
+  }
+
+  function drawBird() {
+    ctx.fillStyle = "#FFD700";
+    ctx.beginPath();
+    ctx.arc(bird.x + bird.width / 2, bird.y + bird.height / 2, bird.width / 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawPipes() {
+    ctx.fillStyle = "#4CAF50";
+    pipes.forEach(pipe => {
+      ctx.fillRect(pipe.x, 0, pipe.width, pipe.top);
+      ctx.fillRect(pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+    });
+  }
+
+  function updatePipes() {
+    pipes.forEach(pipe => pipe.x -= 1.5);
+    if (pipes.length === 0 || pipes[pipes.length - 1].x < 300) {
+      const top = Math.random() * (canvas.height / 2) + 50;
+      const gap = 180;
+      const bottom = canvas.height - top - gap;
+      pipes.push({ x: canvas.width, width: 50, top, bottom, passed: false });
+    }
+  }
+
+  function checkPipePassing() {
+    pipes.forEach(pipe => {
+      if (!pipe.passed && bird.x > pipe.x + pipe.width) {
+        pipe.passed = true;
+        score++;
+        if (score > highScore) highScore = score;
+      }
+    });
+  }
+
+  function detectCollision() {
+    for (let pipe of pipes) {
+      if (
+        bird.x < pipe.x + pipe.width &&
+        bird.x + bird.width > pipe.x &&
+        (bird.y < pipe.top || bird.y + bird.height > canvas.height - pipe.bottom)
+      ) {
+        return true;
+      }
+    }
+    return bird.y < 0 || bird.y + bird.height > canvas.height;
+  }
+
+  function drawScore() {
+    ctx.fillStyle = "#000";
+    ctx.font = "24px Arial";
+    ctx.fillText("Score: " + score, 10, 30);
+    ctx.fillText("High Score: " + highScore, 10, 60);
+  }
+
+  function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (gameRunning && !gamePaused) {
+      bird.velocity += bird.gravity;
+      if (jumpHeld) {
+        bird.velocity += bird.jump * 0.08;
+      }
+      bird.y += bird.velocity;
+      updatePipes();
+      checkPipePassing();
+      drawBird();
+      drawPipes();
+      drawScore();
+
+      if (detectCollision()) {
+        gameRunning = false;
+      }
+    } else if (!gameRunning) {
+      ctx.fillStyle = "red";
+      ctx.font = "32px Arial";
+      ctx.fillText("Game Over!", 110, 250);
+      ctx.font = "20px Arial";
+      ctx.fillText("Press Start to Restart", 90, 300);
+    } else {
+      drawBird();
+      drawPipes();
+      drawScore();
+    }
+    animationId = requestAnimationFrame(gameLoop);
+  }
+
+  function startGame() {
+    cancelAnimationFrame(animationId);
+    resetGame();
+    gameLoop();
+  }
+
+  function togglePause() {
+    if (gameRunning) {
+      gamePaused = !gamePaused;
+    }
+  }
+
+  // Smooth hold-to-fly controls
+  document.addEventListener("keydown", e => {
+    if (e.code === "Space") jumpHeld = true;
+  });
+  document.addEventListener("keyup", e => {
+    if (e.code === "Space") jumpHeld = false;
+  });
+
+  // Mobile/tap support
+  canvas.addEventListener("touchstart", () => { jumpHeld = true; });
+  canvas.addEventListener("touchend", () => { jumpHeld = false; });
+
+  gameLoop();
+<script src="game.js"></script>
+</script>
+
+</body>
+</html>
