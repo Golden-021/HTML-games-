@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Flappy Bird with Start & Pause</title>
+  <title>Flappy Bird - Easy Mode with Smooth Control</title>
   <style>
     body {
       margin: 0;
@@ -13,8 +13,8 @@
       font-family: Arial, sans-serif;
     }
     canvas {
-      background: #e0f7fa;
       border: 2px solid #333;
+      background: #e0f7fa;
       margin-top: 10px;
     }
     .buttons {
@@ -38,130 +38,7 @@
 </head>
 <body>
 
-<h1>Flappy Bird Game</h1>
+<h1>Flappy Bird - Easy Mode 🎮</h1>
 <canvas id="gameCanvas" width="400" height="600"></canvas>
 <div class="buttons">
-  <button onclick="startGame()">Start Game</button>
-  <button onclick="togglePause()">Pause/Resume</button>
-</div>
-
-<script>
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
-
-  let bird, pipes, score, highScore, gameRunning, gamePaused, animationId;
-
-  function resetGame() {
-    bird = { x: 80, y: 300, width: 30, height: 30, velocity: 0, gravity: 0.5, jump: -8 };
-    pipes = [];
-    score = 0;
-    gameRunning = true;
-    gamePaused = false;
-  }
-
-  function drawBird() {
-    ctx.fillStyle = "#FFD700";
-    ctx.beginPath();
-    ctx.arc(bird.x + bird.width / 2, bird.y + bird.height / 2, bird.width / 2, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  function drawPipes() {
-    ctx.fillStyle = "#4CAF50";
-    pipes.forEach(pipe => {
-      ctx.fillRect(pipe.x, 0, pipe.width, pipe.top);
-      ctx.fillRect(pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
-    });
-  }
-
-  function updatePipes() {
-    pipes.forEach(pipe => pipe.x -= 2);
-    if (pipes.length && pipes[0].x + pipes[0].width < 0) {
-      pipes.shift();
-      score++;
-      if (score > highScore) highScore = score;
-    }
-    if (pipes.length === 0 || pipes[pipes.length - 1].x < 250) {
-      const top = Math.random() * (canvas.height / 2) + 50;
-      const gap = 150;
-      const bottom = canvas.height - top - gap;
-      pipes.push({ x: canvas.width, width: 50, top, bottom });
-    }
-  }
-
-  function detectCollision() {
-    for (let pipe of pipes) {
-      if (
-        bird.x < pipe.x + pipe.width &&
-        bird.x + bird.width > pipe.x &&
-        (bird.y < pipe.top || bird.y + bird.height > canvas.height - pipe.bottom)
-      ) {
-        return true;
-      }
-    }
-    return bird.y < 0 || bird.y + bird.height > canvas.height;
-  }
-
-  function drawScore() {
-    ctx.fillStyle = "#000";
-    ctx.font = "24px Arial";
-    ctx.fillText("Score: " + score, 10, 30);
-    ctx.fillText("High Score: " + highScore, 10, 60);
-  }
-
-  function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (gameRunning && !gamePaused) {
-      bird.velocity += bird.gravity;
-      bird.y += bird.velocity;
-      updatePipes();
-      drawBird();
-      drawPipes();
-      drawScore();
-      if (detectCollision()) {
-        gameRunning = false;
-      }
-    } else if (!gameRunning) {
-      ctx.fillStyle = "red";
-      ctx.font = "32px Arial";
-      ctx.fillText("Game Over!", 110, 250);
-      ctx.font = "20px Arial";
-      ctx.fillText("Press Start to Restart", 90, 300);
-    } else {
-      drawBird();
-      drawPipes();
-      drawScore();
-    }
-    animationId = requestAnimationFrame(gameLoop);
-  }
-
-  function startGame() {
-    cancelAnimationFrame(animationId);
-    resetGame();
-    gameLoop();
-  }
-
-  function togglePause() {
-    if (!gameRunning) return;
-    gamePaused = !gamePaused;
-  }
-
-  document.addEventListener("keydown", e => {
-    if (e.code === "Space" && gameRunning && !gamePaused) {
-      bird.velocity = bird.jump;
-    }
-  });
-
-  canvas.addEventListener("click", () => {
-    if (gameRunning && !gamePaused) {
-      bird.velocity = bird.jump;
-    }
-  });
-
-  highScore = 0;
-  resetGame();
-  gameLoop();
-</script>
-
-</body>
-</html>
+  <button onclick="
