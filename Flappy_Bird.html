@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Flappy Bird - Score Fix + Easy Mode</title>
+  <title>🐦 Flappy Bird Easy Mode</title>
   <style>
     body {
       margin: 0;
-      background-color: #87ceeb;
+      background: linear-gradient(to bottom, #87ceeb, #ffffff);
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-family: Arial, sans-serif;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
     }
     canvas {
       border: 2px solid #333;
@@ -18,6 +18,8 @@
       margin-top: 10px;
     }
     .buttons {
+      display: flex;
+      justify-content: center;
       margin-top: 15px;
     }
     button {
@@ -49,11 +51,14 @@
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
 
+  const birdImg = new Image();
+  birdImg.src = 'https://cdn.pixabay.com/photo/2014/12/21/23/56/bird-575839_960_720.png';  // Free cute bird image
+
   let bird, pipes, score, highScore = 0, gameRunning = false, gamePaused = false, animationId;
   let jumpHeld = false;
 
   function resetGame() {
-    bird = { x: 80, y: 300, width: 30, height: 30, velocity: 0, gravity: 0.3, jump: -6 };
+    bird = { x: 80, y: 300, width: 40, height: 40, velocity: 0, gravity: 0.3, jump: -6 };
     pipes = [];
     score = 0;
     gameRunning = true;
@@ -61,10 +66,7 @@
   }
 
   function drawBird() {
-    ctx.fillStyle = "#FFD700";
-    ctx.beginPath();
-    ctx.arc(bird.x + bird.width / 2, bird.y + bird.height / 2, bird.width / 2, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
   }
 
   function drawPipes() {
@@ -158,7 +160,6 @@
     }
   }
 
-  // Smooth hold-to-fly controls
   document.addEventListener("keydown", e => {
     if (e.code === "Space") jumpHeld = true;
   });
@@ -166,12 +167,10 @@
     if (e.code === "Space") jumpHeld = false;
   });
 
-  // Mobile/tap support
   canvas.addEventListener("touchstart", () => { jumpHeld = true; });
   canvas.addEventListener("touchend", () => { jumpHeld = false; });
 
   gameLoop();
-<script src="game.js"></script>
 </script>
 
 </body>
